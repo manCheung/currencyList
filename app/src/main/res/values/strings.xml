@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CurrencyList</string>
+    <string name="btn_load">Load</string>
+    <string name="btn_sort">Sort</string>
+    <string name="loading_data_text">You are NOT loading the data!</string>
+    <string name="iv_right_arrow_desc">Right Arrow</string>
+</resources>
