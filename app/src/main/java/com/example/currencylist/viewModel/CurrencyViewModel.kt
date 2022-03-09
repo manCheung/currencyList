@@ -10,12 +10,12 @@ import com.example.currencylist.model.CurrencyModel
 class CurrencyViewModel (private val roomDatabaseRepository: DatabaseRepository) : ViewModel() {
 
     val currencyRecordList: MutableLiveData<List<CurrencyModel>> = MutableLiveData()
-    val isLoadingData: MutableLiveData<Boolean> = MutableLiveData()
+    val isLoadedData: MutableLiveData<Boolean> = MutableLiveData()
     val isAsc: MutableLiveData<Boolean> = MutableLiveData()
 
     init{
         isAsc.value = true
-        isLoadingData.value = false
+        isLoadedData.value = false
     }
 
     fun getCurrencyDataByAsc(){
@@ -60,7 +60,7 @@ class CurrencyViewModel (private val roomDatabaseRepository: DatabaseRepository)
         isAsc.postValue(!isAsc.value!!)
     }
 
-    fun loadingData() {
-        isLoadingData.postValue(true)
+    fun loadedData() {
+        isLoadedData.postValue(true)
     }
 }

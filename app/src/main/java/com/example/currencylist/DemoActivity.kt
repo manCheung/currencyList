@@ -53,11 +53,14 @@ class DemoActivity : AppCompatActivity(R.layout.activity_main), CurrencyItemClic
             viewModel.insertCurrency(currencyList)
         }
         viewModel.getCurrencyDataByAsc()
-        viewModel.loadingData()
+
+        // update the status of data loaded
+        viewModel.loadedData()
     }
 
     private fun sortCurrency() {
-        if(viewModel.isLoadingData.value!!){
+        // check the currency is loaded
+        if(viewModel.isLoadedData.value!!){
             viewModel.sorting()
         }else{
             Toast.makeText(this, "Please load data first!", Toast.LENGTH_SHORT).show()

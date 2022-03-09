@@ -22,10 +22,6 @@ import kotlinx.coroutines.withContext
 
 class CurrencyListFragment : Fragment() {
 
-//    companion object {
-//        fun newInstance() = CurrencyListFragment()
-//    }
-
     private val viewModel: CurrencyViewModel by activityViewModels()
     private lateinit var currencyListAdapter: CurrencyListAdapter
     private var job: Job? = null
@@ -57,9 +53,13 @@ class CurrencyListFragment : Fragment() {
             currencyListAdapter.notifyDataSetChanged()
         }
 
-        //
         viewModel.isAsc.observe(this.viewLifecycleOwner) {
-            if(viewModel.isLoadingData.value!!) {
+            // observe the asc live data value to handle the sort ordering
+            if(viewModel.isLoadedData.value!!) {
+                /**
+                 * if the user multiple click the sort button, cancel the job task and launch the new task
+                 * make sure the task only run the last click
+                 */
                 job?.cancel()
                 job = lifecycleScope.launch {
                     sortCurrencyList(it)
