@@ -1,13 +1,13 @@
 package com.example.currencylist
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.lifecycle.ViewModelProvider
+import com.example.currencylist.Listener.CurrencyItemClickListener
 import com.example.currencylist.data.CurrencyData
 import com.example.currencylist.db.DatabaseRepository
 import com.example.currencylist.db.RoomDbHelper
@@ -19,7 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
-class DemoActivity : AppCompatActivity(R.layout.activity_main) {
+class DemoActivity : AppCompatActivity(R.layout.activity_main), CurrencyItemClickListener {
 
     private lateinit var viewModel: CurrencyViewModel
 
@@ -45,12 +45,10 @@ class DemoActivity : AppCompatActivity(R.layout.activity_main) {
             sortBtn.setOnClickListener {
                 sortCurrency()
             }
-
         }
     }
 
     private suspend fun insertCurrency(currencyList: List<CurrencyModel>) = withContext(Dispatchers.IO){
-        Log.i("DB EMPTY", viewModel.isDbEmpty().toString())
         if(viewModel.isDbEmpty()){
             viewModel.insertCurrency(currencyList)
         }
@@ -59,7 +57,6 @@ class DemoActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     private fun sortCurrency() {
-        Log.i("Sort Currency load data", viewModel.isLoadingData.value!!.toString())
         if(viewModel.isLoadingData.value!!){
             viewModel.sorting()
         }else{
@@ -67,8 +64,8 @@ class DemoActivity : AppCompatActivity(R.layout.activity_main) {
         }
     }
 
-//    private suspend fun getCurrencyData() = withContext(Dispatchers.Main){
-//        viewModel.getCurrencyData()
-//    }
+    override fun onClick(name: String) {
+        Toast.makeText(this, "you are clicked $name", Toast.LENGTH_SHORT).show()
+    }
 
 }

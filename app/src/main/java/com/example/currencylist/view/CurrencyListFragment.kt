@@ -2,25 +2,25 @@ package com.example.currencylist.view
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.currencylist.Listener.CurrencyItemClickListener
+import com.example.currencylist.DemoActivity
 import com.example.currencylist.R
 import com.example.currencylist.adapter.CurrencyListAdapter
 import com.example.currencylist.viewModel.CurrencyViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class CurrencyListFragment : Fragment(), CurrencyItemClickListener {
+class CurrencyListFragment : Fragment() {
 
 //    companion object {
 //        fun newInstance() = CurrencyListFragment()
@@ -28,6 +28,7 @@ class CurrencyListFragment : Fragment(), CurrencyItemClickListener {
 
     private val viewModel: CurrencyViewModel by activityViewModels()
     private lateinit var currencyListAdapter: CurrencyListAdapter
+    private var job: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,21 +44,11 @@ class CurrencyListFragment : Fragment(), CurrencyItemClickListener {
         val loadDataText = requireView().findViewById<TextView>(R.id.tv_loading_data)
         val rvCurrency = requireView().findViewById<RecyclerView>(R.id.rv_currency)
 
-        //viewModel = ViewModelProvider(this, CurrencyViewModelFactory(DatabaseRepository(RoomDbHelper(this.requireContext())))).get(CurrencyViewModel::class.java)
-
-//        viewModel =
-//            ViewModelProvider(
-//                this,
-//                CurrencyViewModelFactory(DatabaseRepository(RoomDbHelper(this.requireContext())))
-//            ).get(
-//                CurrencyViewModel::class.java
-//            )
-
         loadDataText.visibility = View.VISIBLE
 
         val layoutManager = LinearLayoutManager(this.requireContext())
         rvCurrency.layoutManager = layoutManager
-        currencyListAdapter = CurrencyListAdapter(viewModel, this)
+        currencyListAdapter = CurrencyListAdapter(viewModel, activity as DemoActivity)
         rvCurrency.adapter = currencyListAdapter
 
         viewModel.currencyRecordList.observe(this.viewLifecycleOwner) {
@@ -66,18 +57,15 @@ class CurrencyListFragment : Fragment(), CurrencyItemClickListener {
             currencyListAdapter.notifyDataSetChanged()
         }
 
+        //
         viewModel.isAsc.observe(this.viewLifecycleOwner) {
-            Log.i("isAsc", it.toString())
             if(viewModel.isLoadingData.value!!) {
-                runBlocking {
+                job?.cancel()
+                job = lifecycleScope.launch {
                     sortCurrencyList(it)
                 }
             }
         }
-//        runBlocking {
-//            getCurrencyList()
-//        }
-
     }
 
     private suspend fun sortCurrencyList(isAsc: Boolean) = withContext(Dispatchers.IO){
@@ -86,14 +74,6 @@ class CurrencyListFragment : Fragment(), CurrencyItemClickListener {
         }else{
             viewModel.getCurrencyDataByDesc()
         }
-    }
-
-//    private suspend fun getCurrencyList() = withContext(Dispatchers.IO){
-//        viewModel.getCurrencyData()
-//    }
-
-    override fun onClick(name: String) {
-        Toast.makeText(this.requireContext(), "you are clicked $name", Toast.LENGTH_SHORT).show()
     }
 
 }
